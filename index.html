@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Random 100-999</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#111;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.card{background:#222;padding:24px;border-radius:16px;text-align:center;width:320px}
+button{font-size:18px;padding:12px 18px;border:none;border-radius:10px}
+.num{font-size:56px;font-weight:700;margin:20px 0}
+.small{color:#bbb}
+</style></head><body>
+<div class="card">
+<h2>🎲 Số hôm nay</h2>
+<div id="num" class="num">---</div>
+<button onclick="today()">Lấy số hôm nay</button>
+<p id="left" class="small"></p>
+<button onclick="reset()" style="margin-top:10px">Reset</button>
+</div>
+<script>
+const K='rand900v1';
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function load(){
+ let s=localStorage.getItem(K);
+ if(s)return JSON.parse(s);
+ let arr=[];for(let i=100;i<=999;i++)arr.push(i);
+ s={list:shuffle(arr),start:new Date().toISOString().slice(0,10),shown:{}};
+ localStorage.setItem(K,JSON.stringify(s));return s;
+}
+function save(s){localStorage.setItem(K,JSON.stringify(s));}
+function daysBetween(a,b){return Math.floor((new Date(b)-new Date(a))/86400000);}
+function today(){
+ let s=load();
+ let d=new Date().toISOString().slice(0,10);
+ if(s.shown[d]!=null){show(s.shown[d],s);return;}
+ let idx=daysBetween(s.start,d);
+ if(idx<0) idx=0;
+ if(idx>=900){document.getElementById('num').textContent="HẾT";document.getElementById('left').textContent="Đã dùng hết 900 số.";return;}
+ s.shown[d]=s.list[idx]; save(s); show(s.list[idx],s);
+}
+function show(n,s){
+ document.getElementById('num').textContent=n;
+ let used=Object.keys(s.shown).length;
+ document.getElementById('left').textContent="Đã dùng: "+used+" | Còn: "+(900-used);
+}
+function reset(){if(confirm("Reset toàn bộ?")){localStorage.removeItem(K);location.reload();}}
+today();
+</script></body></html>
