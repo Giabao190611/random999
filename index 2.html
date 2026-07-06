@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>password cue</title>
+		<style>
+			* { margin: 0; padding: 0; box-sizing: border-box; }
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Hello, World!</h1>
+			<p>Start editing to build something amazing.</p>
+		</div>
+	</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="vi">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+		<title>Cue Password Lite</title>
+
+		<style>
+			*{
+			margin:0;
+			padding:0;
+			box-sizing:border-box;
+			font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+			}
+
+			body{
+			background:#111;
+			color:#fff;
+			display:flex;
+			justify-content:center;
+			align-items:center;
+			height:100vh;
+			}
+
+			.card{
+			width:90%;
+			max-width:420px;
+			background:#1b1b1b;
+			padding:25px;
+			border-radius:20px;
+			box-shadow:0 0 30px rgba(0,0,0,.45);
+			}
+
+			h1{
+			text-align:center;
+			color:#d4af37;
+			margin-bottom:20px;
+			}
+
+			#number{
+			font-size:70px;
+			font-weight:bold;
+			text-align:center;
+			color:#ffd54a;
+			margin:20px 0;
+			}
+
+			.progress{
+			margin:15px 0;
+			text-align:center;
+			font-size:18px;
+			}
+
+			button{
+			width:100%;
+			padding:15px;
+			margin-top:12px;
+			border:none;
+			border-radius:14px;
+			font-size:18px;
+			font-weight:bold;
+			cursor:pointer;
+			}
+
+			#draw{
+			background:#d4af37;
+			color:#111;
+			}
+
+			#undo{
+			background:#444;
+			color:#fff;
+			}
+
+			#reset{
+			background:#b30000;
+			color:#fff;
+			}
+
+			#last{
+			margin-top:18px;
+			text-align:center;
+			opacity:.7;
+			font-size:15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="card">
+			<h1>Cue Password</h1>
+
+			<div id="number">---</div>
+
+			<div class="progress">
+				Đã dùng:
+				<span id="used">0</span>/900
+			</div>
+
+			<button id="draw">LẤY SỐ</button>
+
+			<button id="undo">UNDO</button>
+
+			<button id="reset">RESET</button>
+
+			<div id="last">Chưa có số</div>
+		</div>
+
+		<script>
+
+			const KEY="cue_password_lite";
+
+			let db={
+			numbers:[],
+			index:0,
+			history:[]
+			};
+
+			function shuffle(arr){
+
+			for(let i=arr.length-1;i>0;i--){
+
+			const j=Math.floor(Math.random()*(i+1));
+
+			[arr[i],arr[j]]=[arr[j],arr[i]];
+
+			}
+
+			}
+
+			function createDB(){
+
+			db.numbers=[];
+
+			for(let i=100;i<=999;i++){
+
+			db.numbers.push(i);
+
+			}
+
+			shuffle(db.numbers);
+
+			db.index=0;
+
+			db.history=[];
+
+			save();
+
+			}
+
+			function save(){
+
+			localStorage.setItem(KEY,JSON.stringify(db));
+
+			}
+
+			function load(){
+
+			const data=localStorage.getItem(KEY);
+
+			if(data){
+
+			db=JSON.parse(data);
+
+			}else{
+
+			createDB();
+
+			}
+
+			function draw(){
+
+			if(db.index>=900){
+
+			alert("Đã hết 900 số!");
+
+			return;
+
+			}
+
+			const number=db.numbers[db.index];
+
+			db.history.push(number);
+
+			db.index++;
+
+			save();
+
+			update(number);
+
+			}
+
+			function undo(){
+
+			if(db.history.length===0){
+
+			return;
+
+			}
+
+			db.index--;
+
+			const last=db.history.pop();
+
+			save();
+
+			const current=db.history.length
+			?db.history[db.history.length-1]
+			:"---";
+
+			update(current);
+
+			}
+
+			function reset(){
+
+			if(!confirm("Reset toàn bộ dữ liệu?")){
+
+			return;
+
+			}
+
+			localStorage.removeItem(KEY);
+
+			createDB();
+
+			update("---");
+
+			}
+
+			function update(number){
+
+			document.getElementById("number").innerHTML=number;
+
+			document.getElementById("used").innerHTML=db.index;
+
+			if(number==="---"){
+
+			document.getElementById("last").innerHTML="Chưa có số";
+
+			}else{
+
+			document.getElementById("last").innerHTML=
+
+			"Số gần nhất: <b>"+number+"</b>";
+
+			}
+
+			}
+
+			load();
+
+			if(db.history.length){
+
+			update(db.history[db.history.length-1]);
+
+			}else{
+
+			update("---");
+
+			}
+
+			document.getElementById("draw").onclick=draw;
+
+			document.getElementById("undo").onclick=undo;
+
+			document.getElementById("reset").onclick=reset;
+			===== PHẦN 3/3 =====
+		</script>
+	</body>
+</html>
